@@ -1,102 +1,56 @@
---// Roblox Lua Script
+--// Simple Roblox UI
 -- Place this in a LocalScript under StarterGui
 
 local Players = game:GetService("Players")
-local TweenService = game:GetService("TweenService")
 local player = Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
 
 -- Create ScreenGui
 local screenGui = Instance.new("ScreenGui")
-screenGui.Name = "KeyUI"
+screenGui.Name = "DiscordUI"
 screenGui.Parent = playerGui
 
--- Toggle Button (always visible at top)
-local toggleButton = Instance.new("TextButton")
-toggleButton.Size = UDim2.new(0, 100, 0, 30)
-toggleButton.Position = UDim2.new(0.5, -50, 0, 10)
-toggleButton.Text = "Open"
-toggleButton.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
-toggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-toggleButton.Font = Enum.Font.SourceSansBold
-toggleButton.TextSize = 18
-toggleButton.Parent = screenGui
-
--- Create Frame (UI container)
+-- Frame
 local frame = Instance.new("Frame")
-frame.Size = UDim2.new(0, 300, 0, 200)
-frame.Position = UDim2.new(0.5, -150, 0.5, -100)
+frame.Size = UDim2.new(0, 250, 0, 150)
+frame.Position = UDim2.new(0.5, -125, 0.5, -75)
 frame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-frame.Active = true
-frame.Draggable = true
-frame.Visible = false
-frame.BackgroundTransparency = 1 -- start invisible
 frame.Parent = screenGui
 
 -- Title
 local title = Instance.new("TextLabel")
 title.Size = UDim2.new(1, 0, 0, 40)
 title.BackgroundTransparency = 1
-title.Text = "Join Discord for key"
+title.Text = "Join Discord to get key"
 title.TextColor3 = Color3.fromRGB(255, 255, 255)
 title.Font = Enum.Font.SourceSansBold
 title.TextSize = 20
-title.TextTransparency = 1
 title.Parent = frame
 
--- TextBox for key input
-local keyBox = Instance.new("TextBox")
-keyBox.Size = UDim2.new(1, -20, 0, 40)
-keyBox.Position = UDim2.new(0, 10, 0, 60)
-keyBox.PlaceholderText = "Enter key here..."
-keyBox.Text = ""
-keyBox.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
-keyBox.TextColor3 = Color3.fromRGB(255, 255, 255)
-keyBox.Font = Enum.Font.SourceSans
-keyBox.TextSize = 18
-keyBox.BackgroundTransparency = 1
-keyBox.TextTransparency = 1
-keyBox.Parent = frame
-
--- Check Key Button
-local checkButton = Instance.new("TextButton")
-checkButton.Size = UDim2.new(0.5, -15, 0, 40)
-checkButton.Position = UDim2.new(0, 10, 0, 120)
-checkButton.Text = "Check Key"
-checkButton.BackgroundColor3 = Color3.fromRGB(80, 150, 80)
-checkButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-checkButton.Font = Enum.Font.SourceSansBold
-checkButton.TextSize = 18
-checkButton.BackgroundTransparency = 1
-checkButton.TextTransparency = 1
-checkButton.Parent = frame
+-- Label (for instructions or info text)
+local infoLabel = Instance.new("TextLabel")
+infoLabel.Size = UDim2.new(1, -20, 0, 40)
+infoLabel.Position = UDim2.new(0, 10, 0, 50)
+infoLabel.BackgroundTransparency = 1
+infoLabel.Text = "Click the button below"
+infoLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+infoLabel.Font = Enum.Font.SourceSans
+infoLabel.TextSize = 18
+infoLabel.Parent = frame
 
 -- Discord Button
 local discordButton = Instance.new("TextButton")
-discordButton.Size = UDim2.new(0.5, -15, 0, 40)
-discordButton.Position = UDim2.new(0.5, 5, 0, 120)
+discordButton.Size = UDim2.new(1, -20, 0, 40)
+discordButton.Position = UDim2.new(0, 10, 0, 100)
 discordButton.Text = "Join Discord"
 discordButton.BackgroundColor3 = Color3.fromRGB(80, 80, 150)
 discordButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 discordButton.Font = Enum.Font.SourceSansBold
 discordButton.TextSize = 18
-discordButton.BackgroundTransparency = 1
-discordButton.TextTransparency = 1
 discordButton.Parent = frame
 
 -- Logic
-local correctKey = "yougotbeamedlol"
 local discordLink = "https://discord.gg/rK47BUPJeZ"
-
-checkButton.MouseButton1Click:Connect(function()
-    if keyBox.Text == correctKey then
-        checkButton.Text = "Key Accepted!"
-        checkButton.BackgroundColor3 = Color3.fromRGB(50, 200, 50)
-    else
-        checkButton.Text = "Invalid Key!"
-        checkButton.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
-    end
-end)
 
 discordButton.MouseButton1Click:Connect(function()
     if setclipboard then
@@ -105,37 +59,4 @@ discordButton.MouseButton1Click:Connect(function()
     else
         discordButton.Text = "Clipboard not supported"
     end
-end)
-
--- Fade function
-local function fadeUI(open)
-    local goalTransparency = open and 0 or 1
-    local tweenInfo = TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
-
-    -- Tween frame background
-    TweenService:Create(frame, tweenInfo, {BackgroundTransparency = goalTransparency}):Play()
-
-    -- Tween children
-    for _, child in pairs(frame:GetChildren()) do
-        if child:IsA("TextLabel") or child:IsA("TextButton") or child:IsA("TextBox") then
-            TweenService:Create(child, tweenInfo, {
-                BackgroundTransparency = goalTransparency,
-                TextTransparency = goalTransparency
-            }):Play()
-        end
-    end
-
-    if open then
-        frame.Visible = true
-    else
-        task.delay(0.5, function() frame.Visible = false end) -- hide after fade out
-    end
-end
-
--- Toggle Button Logic
-local isOpen = false
-toggleButton.MouseButton1Click:Connect(function()
-    isOpen = not isOpen
-    toggleButton.Text = isOpen and "Close" or "Open"
-    fadeUI(isOpen)
 end)
