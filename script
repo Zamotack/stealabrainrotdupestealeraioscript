@@ -1,6 +1,3 @@
---// Simple Roblox UI
--- Place this in a LocalScript under StarterGui
-
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
