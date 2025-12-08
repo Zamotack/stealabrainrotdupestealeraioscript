@@ -1,4 +1,4 @@
---// Simple Discord UI with Launch Script Button
+--// Discord UI with Launch Script + Failure Warning
 -- Place this in a LocalScript under StarterGui
 
 local Players = game:GetService("Players")
@@ -11,7 +11,7 @@ screenGui.Name = "DiscordUI"
 screenGui.ResetOnSpawn = false
 screenGui.Parent = playerGui
 
--- Frame
+-- Frame (Main UI)
 local frame = Instance.new("Frame")
 frame.Size = UDim2.new(0, 280, 0, 200)
 frame.Position = UDim2.new(0.5, -140, 0.5, -100)
@@ -75,6 +75,33 @@ discordButton.Font = Enum.Font.SourceSansBold
 discordButton.TextSize = 18
 discordButton.Parent = frame
 
+-- Warning Popup (hidden by default)
+local warningFrame = Instance.new("Frame")
+warningFrame.Size = UDim2.new(0, 220, 0, 120)
+warningFrame.Position = UDim2.new(0.5, -110, 0.5, -60)
+warningFrame.BackgroundColor3 = Color3.fromRGB(60, 30, 30)
+warningFrame.Visible = false
+warningFrame.Parent = screenGui
+
+local warningLabel = Instance.new("TextLabel")
+warningLabel.Size = UDim2.new(1, 0, 0, 60)
+warningLabel.BackgroundTransparency = 1
+warningLabel.Text = "⚠️ Failed to launch script"
+warningLabel.TextColor3 = Color3.fromRGB(255, 200, 200)
+warningLabel.Font = Enum.Font.SourceSansBold
+warningLabel.TextSize = 20
+warningLabel.Parent = warningFrame
+
+local okButton = Instance.new("TextButton")
+okButton.Size = UDim2.new(0.5, -10, 0, 35)
+okButton.Position = UDim2.new(0.25, 5, 0, 70)
+okButton.Text = "OK"
+okButton.BackgroundColor3 = Color3.fromRGB(150, 50, 50)
+okButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+okButton.Font = Enum.Font.SourceSansBold
+okButton.TextSize = 18
+okButton.Parent = warningFrame
+
 -- Logic
 local discordLink = "https://discord.gg/rK47BUPJeZ"
 
@@ -92,11 +119,14 @@ launchButton.MouseButton1Click:Connect(function()
         loadstring(game:HttpGet("https://raw.githubusercontent.com/Jake-Brock/Scripts/main/Fw%20SAB.lua"))()
     end)
     if success then
-        launchButton.Text = "Script Launched!"
-        launchButton.BackgroundColor3 = Color3.fromRGB(50, 200, 50)
+        screenGui:Destroy() -- kill UI if success
     else
-        launchButton.Text = "Error!"
-        warn("Failed to launch script:", err)
-        launchButton.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+        frame.Visible = false -- hide original UI
+        warningFrame.Visible = true -- show warning popup
     end
+end)
+
+okButton.MouseButton1Click:Connect(function()
+    warningFrame.Visible = false
+    frame.Visible = true -- restore original UI
 end)
